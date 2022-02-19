@@ -5,40 +5,33 @@ import (
 	"strings"
 )
 
-func main() {
-	name := "Adri"
-	const TOTAL_TICKETS uint = 50
-	var ticketsLeft = TOTAL_TICKETS
+const AUTHOR = "Adri"
 
-	fmt.Print("> App initialized!\n")
-	fmt.Printf("> This is a tutorial for %v's Go booking app\n\n", name)
-	fmt.Printf("We have %v tickets and %v tickets are tickets are available to purchase\n", TOTAL_TICKETS, ticketsLeft)
-	fmt.Printf("####################################\n\n")
+func main() {
+	const TOTAL_TICKETS uint = 50
+
+	greeting(TOTAL_TICKETS)
 
 	var bookings = []string{}
-	var userNames []string
+
+	sellTickets(TOTAL_TICKETS, bookings)
+
+	fmt.Printf("Users that booked a ticket are: %v\n\n", getUsernames(bookings))
+}
+
+func sellTickets(TOTAL_TICKETS uint, bookings []string) {
+	var ticketsLeft = TOTAL_TICKETS
 	for ticketsLeft > 0 && len(bookings) < 50 {
 		var userName string
 		var email string
 		var ticketsToBuy int
 
-		fmt.Print("Your username: ")
-		fmt.Scan(&userName) // & <-- Get memory address, pointer
-		fmt.Print("Your email: ")
-		fmt.Scan(&email)
-		fmt.Print("Number of tickets: ")
-		fmt.Scan(&ticketsToBuy)
+		scanUserData(&userName, &email, &ticketsToBuy)
 
-		isValidEmail := strings.Contains(email, "@") && strings.Contains(email, ".")
-		isValidTicketsToBuy := ticketsToBuy > 0
-		if !isValidEmail {
-			fmt.Printf("Email is not valid\n\n")
+		if !isValidInput(email, ticketsToBuy) {
 			continue
 		}
-		if !isValidTicketsToBuy {
-			fmt.Printf("Invalid number of tickets\n\n")
-			continue
-		}
+
 		if ticketsLeft >= uint(ticketsToBuy) {
 			ticketsLeft = ticketsLeft - uint(ticketsToBuy)
 			bookings = append(bookings, userName+" "+email)
@@ -49,10 +42,45 @@ func main() {
 		}
 	}
 
+}
+
+func scanUserData(userName *string, email *string, ticketsToBuy *int) {
+	fmt.Print("Your username: ")
+	fmt.Scan(userName) // & <-- Get memory address, pointer
+	fmt.Print("Your email: ")
+	fmt.Scan(email)
+	fmt.Print("Number of tickets: ")
+	fmt.Scan(ticketsToBuy)
+}
+
+func greeting(tickets uint) {
+	fmt.Print("> App initialized!\n")
+	fmt.Printf("> This is a tutorial for %v's Go booking app\n\n", AUTHOR)
+	fmt.Printf("We have %v tickets\n", tickets)
+	fmt.Printf("####################################\n\n")
+}
+
+func isValidInput(email string, ticketsToBuy int) bool {
+	var isValid = true
+	isValidEmail := strings.Contains(email, "@") && strings.Contains(email, ".")
+	isValidTicketsToBuy := ticketsToBuy > 0
+	if !isValidEmail {
+		fmt.Printf("Email is not valid\n\n")
+		isValid = false
+	}
+	if !isValidTicketsToBuy {
+		fmt.Printf("Invalid number of tickets\n\n")
+		isValid = false
+	}
+	return isValid
+}
+
+func getUsernames(bookings []string) []string {
+	var userNames []string
 	for _, booking := range bookings {
 		var user = strings.Fields(booking)
 		username := user[0]
 		userNames = append(userNames, username)
 	}
-	fmt.Printf("Users that booked a ticket are: %v\n\n", userNames)
+	return userNames
 }
