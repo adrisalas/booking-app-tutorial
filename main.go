@@ -29,6 +29,16 @@ func main() {
 		fmt.Print("Number of tickets: ")
 		fmt.Scan(&ticketsToBuy)
 
+		isValidEmail := strings.Contains(email, "@") && strings.Contains(email, ".")
+		isValidTicketsToBuy := ticketsToBuy > 0
+		if !isValidEmail {
+			fmt.Printf("Email is not valid\n\n")
+			continue
+		}
+		if !isValidTicketsToBuy {
+			fmt.Printf("Invalid number of tickets\n\n")
+			continue
+		}
 		if ticketsLeft >= uint(ticketsToBuy) {
 			ticketsLeft = ticketsLeft - uint(ticketsToBuy)
 			bookings = append(bookings, userName+" "+email)
