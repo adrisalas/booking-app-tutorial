@@ -14,14 +14,14 @@ func main() {
 
 	var bookings = []string{}
 
-	sellTickets(TOTAL_TICKETS, bookings)
+	sellTickets(TOTAL_TICKETS, &bookings)
 
 	fmt.Printf("Users that booked a ticket are: %v\n\n", getUsernames(bookings))
 }
 
-func sellTickets(TOTAL_TICKETS uint, bookings []string) {
+func sellTickets(TOTAL_TICKETS uint, bookings *[]string) {
 	var ticketsLeft = TOTAL_TICKETS
-	for ticketsLeft > 0 && len(bookings) < 50 {
+	for ticketsLeft > 0 && len(*bookings) < 50 {
 		var userName string
 		var email string
 		var ticketsToBuy int
@@ -34,7 +34,7 @@ func sellTickets(TOTAL_TICKETS uint, bookings []string) {
 
 		if ticketsLeft >= uint(ticketsToBuy) {
 			ticketsLeft = ticketsLeft - uint(ticketsToBuy)
-			bookings = append(bookings, userName+" "+email)
+			*bookings = append(*bookings, userName+" "+email)
 			fmt.Printf("\n%v [%v] bought %v tickets\n", userName, email, ticketsToBuy)
 			fmt.Printf("There are %v tickets left\n\n", ticketsLeft)
 		} else if ticketsLeft < uint(ticketsToBuy) {
