@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -14,6 +15,8 @@ type User struct {
 	ticketsToBuy int
 }
 
+var wg = sync.WaitGroup{} // To be able to wait/join threads
+
 func main() {
 	const TOTAL_TICKETS uint = 50
 
@@ -23,6 +26,7 @@ func main() {
 
 	sellTickets(TOTAL_TICKETS, &bookings)
 
+	wg.Wait() // Wait until wait counter is 0 (all threads ended)
 	fmt.Printf("Users that booked a ticket are: %v\n\n", getUsernames(bookings))
 }
 
@@ -39,6 +43,7 @@ func sellTickets(TOTAL_TICKETS uint, bookings *[]User) {
 
 		if ticketsLeft >= uint(user.ticketsToBuy) {
 			ticketsLeft = bookTickets(ticketsLeft, user, bookings)
+			wg.Add(1)            // Increase wait counter
 			go sendTickets(user) // This is a Runnable/Thread WHATTT MINDBLOWN
 		} else if ticketsLeft < uint(user.ticketsToBuy) {
 			fmt.Println("You cannot buy that many tickets there are only", ticketsLeft, "tickets left")
@@ -48,7 +53,6 @@ func sellTickets(TOTAL_TICKETS uint, bookings *[]User) {
 }
 
 func scanUserData(userPointer *User) {
-	// TODO There should be another form in Go to do this "C Trick" to work with memory
 	fmt.Print("Your username: ")
 	fmt.Scan(&(*userPointer).userName)
 	fmt.Print("Your email: ")
@@ -97,11 +101,11 @@ func bookTickets(ticketsLeft uint, user User, bookings *[]User) uint {
 }
 
 func sendTickets(user User) {
-	//Simulate generation of ticket
 	var ticket = fmt.Sprintf("%v tickets for %v", user.ticketsToBuy, user.userName)
 	//Simulate sending in a email
-	time.Sleep(10 * time.Second)
+	time.Sleep(60 * time.Second)
 	fmt.Print("\n#######################\n")
 	fmt.Printf("Sending ticket:\n %v \nto email address %v\n", ticket, user.email)
 	fmt.Print("#######################\n\n")
+	wg.Done() // Decrease wait counter
 }
