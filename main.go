@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 const AUTHOR = "Adri"
@@ -38,7 +39,7 @@ func sellTickets(TOTAL_TICKETS uint, bookings *[]User) {
 
 		if ticketsLeft >= uint(user.ticketsToBuy) {
 			ticketsLeft = bookTickets(ticketsLeft, user, bookings)
-			sendTickets(user)
+			go sendTickets(user) // This is a Runnable/Thread WHATTT MINDBLOWN
 		} else if ticketsLeft < uint(user.ticketsToBuy) {
 			fmt.Println("You cannot buy that many tickets there are only", ticketsLeft, "tickets left")
 		}
@@ -96,10 +97,11 @@ func bookTickets(ticketsLeft uint, user User, bookings *[]User) uint {
 }
 
 func sendTickets(user User) {
+	time.Sleep(10 * time.Second)
 	//Simulate generation of ticket
 	var ticket = fmt.Sprintf("%v tickets for %v", user.ticketsToBuy, user.userName)
 	//Simulate sending in a email
-	fmt.Print("#######################\n")
+	fmt.Print("\n#######################\n")
 	fmt.Printf("Sending ticket:\n %v \nto email address %v\n", ticket, user.email)
 	fmt.Print("#######################\n\n")
 }
