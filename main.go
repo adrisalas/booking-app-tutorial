@@ -97,10 +97,10 @@ func bookTickets(ticketsLeft uint, user User, bookings *[]User) uint {
 }
 
 func sendTickets(user User) {
-	time.Sleep(10 * time.Second)
 	//Simulate generation of ticket
 	var ticket = fmt.Sprintf("%v tickets for %v", user.ticketsToBuy, user.userName)
 	//Simulate sending in a email
+	time.Sleep(10 * time.Second)
 	fmt.Print("\n#######################\n")
 	fmt.Printf("Sending ticket:\n %v \nto email address %v\n", ticket, user.email)
 	fmt.Print("#######################\n\n")
