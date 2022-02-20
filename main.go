@@ -37,10 +37,8 @@ func sellTickets(TOTAL_TICKETS uint, bookings *[]User) {
 		}
 
 		if ticketsLeft >= uint(user.ticketsToBuy) {
-			ticketsLeft = ticketsLeft - uint(user.ticketsToBuy)
-			*bookings = append(*bookings, user)
-			fmt.Printf("\n%v [%v] bought %v tickets\n", user.userName, user.email, user.ticketsToBuy)
-			fmt.Printf("There are %v tickets left\n\n", ticketsLeft)
+			ticketsLeft = bookTickets(ticketsLeft, user, bookings)
+			sendTickets(user)
 		} else if ticketsLeft < uint(user.ticketsToBuy) {
 			fmt.Println("You cannot buy that many tickets there are only", ticketsLeft, "tickets left")
 		}
@@ -87,4 +85,21 @@ func getUsernames(bookings []User) []string {
 		userNames = append(userNames, booking.userName)
 	}
 	return userNames
+}
+
+func bookTickets(ticketsLeft uint, user User, bookings *[]User) uint {
+	ticketsLeft = ticketsLeft - uint(user.ticketsToBuy)
+	*bookings = append(*bookings, user)
+	fmt.Printf("\n%v [%v] bought %v tickets\n", user.userName, user.email, user.ticketsToBuy)
+	fmt.Printf("There are %v tickets left\n\n", ticketsLeft)
+	return ticketsLeft
+}
+
+func sendTickets(user User) {
+	//Simulate generation of ticket
+	var ticket = fmt.Sprintf("%v tickets for %v", user.ticketsToBuy, user.userName)
+	//Simulate sending in a email
+	fmt.Print("#######################\n")
+	fmt.Printf("Sending ticket:\n %v \nto email address %v\n", ticket, user.email)
+	fmt.Print("#######################\n\n")
 }
