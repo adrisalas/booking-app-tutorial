@@ -7,50 +7,55 @@ import (
 
 const AUTHOR = "Adri"
 
+type User struct {
+	userName     string
+	email        string
+	ticketsToBuy int
+}
+
 func main() {
 	const TOTAL_TICKETS uint = 50
 
 	greeting(TOTAL_TICKETS)
 
-	var bookings = []string{}
+	var bookings = []User{}
 
 	sellTickets(TOTAL_TICKETS, &bookings)
 
 	fmt.Printf("Users that booked a ticket are: %v\n\n", getUsernames(bookings))
 }
 
-func sellTickets(TOTAL_TICKETS uint, bookings *[]string) {
+func sellTickets(TOTAL_TICKETS uint, bookings *[]User) {
 	var ticketsLeft = TOTAL_TICKETS
-	for ticketsLeft > 0 && len(*bookings) < 50 {
-		var userName string
-		var email string
-		var ticketsToBuy int
+	for ticketsLeft > 0 && uint(len(*bookings)) < TOTAL_TICKETS {
+		var user User
+		scanUserData(&user)
+		fmt.Println(user)
 
-		scanUserData(&userName, &email, &ticketsToBuy)
-
-		if !isValidInput(email, ticketsToBuy) {
+		if !isValidInput(&user) {
 			continue
 		}
 
-		if ticketsLeft >= uint(ticketsToBuy) {
-			ticketsLeft = ticketsLeft - uint(ticketsToBuy)
-			*bookings = append(*bookings, userName+" "+email)
-			fmt.Printf("\n%v [%v] bought %v tickets\n", userName, email, ticketsToBuy)
+		if ticketsLeft >= uint(user.ticketsToBuy) {
+			ticketsLeft = ticketsLeft - uint(user.ticketsToBuy)
+			*bookings = append(*bookings, user)
+			fmt.Printf("\n%v [%v] bought %v tickets\n", user.userName, user.email, user.ticketsToBuy)
 			fmt.Printf("There are %v tickets left\n\n", ticketsLeft)
-		} else if ticketsLeft < uint(ticketsToBuy) {
+		} else if ticketsLeft < uint(user.ticketsToBuy) {
 			fmt.Println("You cannot buy that many tickets there are only", ticketsLeft, "tickets left")
 		}
 	}
 
 }
 
-func scanUserData(userName *string, email *string, ticketsToBuy *int) {
+func scanUserData(userPointer *User) {
+	// TODO There should be another form in Go to do this "C Trick" to work with memory
 	fmt.Print("Your username: ")
-	fmt.Scan(userName) // & <-- Get memory address, pointer
+	fmt.Scan(&(*userPointer).userName)
 	fmt.Print("Your email: ")
-	fmt.Scan(email)
+	fmt.Scan(&(*userPointer).email)
 	fmt.Print("Number of tickets: ")
-	fmt.Scan(ticketsToBuy)
+	fmt.Scan(&(*userPointer).ticketsToBuy)
 }
 
 func greeting(tickets uint) {
@@ -60,10 +65,11 @@ func greeting(tickets uint) {
 	fmt.Printf("####################################\n\n")
 }
 
-func isValidInput(email string, ticketsToBuy int) bool {
+func isValidInput(userPointer *User) bool {
+	var user User = *userPointer
 	var isValid = true
-	isValidEmail := strings.Contains(email, "@") && strings.Contains(email, ".")
-	isValidTicketsToBuy := ticketsToBuy > 0
+	isValidEmail := strings.Contains(user.email, "@") && strings.Contains(user.email, ".")
+	isValidTicketsToBuy := user.ticketsToBuy > 0
 	if !isValidEmail {
 		fmt.Printf("Email is not valid\n\n")
 		isValid = false
@@ -75,12 +81,10 @@ func isValidInput(email string, ticketsToBuy int) bool {
 	return isValid
 }
 
-func getUsernames(bookings []string) []string {
+func getUsernames(bookings []User) []string {
 	var userNames []string
 	for _, booking := range bookings {
-		var user = strings.Fields(booking)
-		username := user[0]
-		userNames = append(userNames, username)
+		userNames = append(userNames, booking.userName)
 	}
 	return userNames
 }
